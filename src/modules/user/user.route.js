@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { UserController } from "./user.controller";
+import auth from "../../middlewares/auth";
+const router = Router();
+router.get("/", auth("ADMIN"), UserController.getAllUsers);
+router.patch("/status/:id", auth("ADMIN"), UserController.changeUserStatus);
+router.delete("/:id", auth("ADMIN"), UserController.deleteUser);
+router.get("/:id", auth("ADMIN", "CUSTOMER", "TECHNICIAN"), UserController.getSingleUser);
+router.patch("/:id", auth("ADMIN", "CUSTOMER", "TECHNICIAN"), UserController.updateUser);
+export default router;

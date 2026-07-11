@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { TechnicianController } from "./technician.controller";
+import auth from "../../middlewares/auth";
+const router = Router();
+router.post("/", auth("TECHNICIAN"), TechnicianController.createTechnicianProfile);
+router.put("/availability", auth("TECHNICIAN", "CUSTOMER"), TechnicianController.updateAvailability);
+router.get("/", TechnicianController.getAllTechnicians);
+router.get("/:id", TechnicianController.getSingleTechnician);
+router.patch("/:id", auth("TECHNICIAN"), TechnicianController.updateTechnician);
+router.delete("/:id", auth("ADMIN"), TechnicianController.deleteTechnician);
+export default router;
