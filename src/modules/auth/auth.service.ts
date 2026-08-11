@@ -3,9 +3,9 @@ import bcrypt from "bcrypt";
 import { IRegisterUser } from "./auth.interface";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
-import {  jwtUtils } from "../../utils/jwt";
+import { jwtUtils } from "../../utils/jwt";
 import { TJwtPayload } from "../../interfaces/jwtPayload";
-import { SignOptions } from "jsonwebtoken";
+import { JwtPayload, SignOptions } from "jsonwebtoken";
 
 const registerUser = async (payload: IRegisterUser) => {
 
@@ -45,7 +45,7 @@ const loginUser = async (payload: { email: string; password: string; }) => {
     where: {
       email: payload.email,
     },
-    
+   
   });
 
 
@@ -59,7 +59,7 @@ const loginUser = async (payload: { email: string; password: string; }) => {
     throw new Error("Password doesn't match!");
   }
 
-  const accessToken =jwtUtils.createToken(
+  const accessToken = jwtUtils.createToken(
     {
       id: user.id,
       email: user.email,
@@ -70,12 +70,25 @@ const loginUser = async (payload: { email: string; password: string; }) => {
   );
 
 
+  const refreshToken = jwtUtils.createToken(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    },
+    config.jwt_refresh_secret,
+    config.jwt_refresh_expires_in as SignOptions
+  );
 
-return {
-  accessToken,
 
- 
-};
+
+  return {
+    accessToken,
+    refreshToken,
+    user
+
+
+  };
 };
 
 
@@ -84,19 +97,55 @@ const getMe = async (user: TJwtPayload) => {
   const result = await prisma.user.findUnique({
     where: {
       id: user.id,
-  
+
     },
-    omit:{
-      password:true
+    omit: {
+      password: true
     }
   });
 
   return result;
 };
 
+const refreshToken = async (refreshToken : string) => {
+    const verifiedRefreshToken = jwtUtils.verifyToken(refreshToken, config.jwt_refresh_secret);
+
+    if(!verifiedRefreshToken.success){
+        throw new Error(verifiedRefreshToken.error)
+    }
+
+    const {id} = verifiedRefreshToken.data as JwtPayload;
+
+    const user = await prisma.user.findUniqueOrThrow({
+        where : {
+            id
+        }
+    })
+
+   
+
+    const jwtPayload = {
+        id,
+        name : user.name,
+        email : user.email,
+        role : user.role
+    }
+
+
+    const accessToken = jwtUtils.createToken(
+        jwtPayload,
+        config.jwt_access_secret,
+        config.jwt_access_expires_in as SignOptions
+    );
+
+    return {accessToken}
+}
+
+
 export const AuthService = {
   registerUser,
   loginUser,
-  getMe
+  getMe,
+  refreshToken
 };
 

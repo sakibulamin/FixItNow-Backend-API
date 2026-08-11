@@ -5,15 +5,15 @@ import auth from "../../middlewares/auth";
 
 const router = Router();
 
-router.post("/", auth("ADMIN"), CategoryController.createCategory);
+router.post("/",  CategoryController.createCategory);
 
 router.get("/", CategoryController.getAllCategories);
 
 router.get("/:id", CategoryController.getSingleCategory);
 
-router.patch("/:id", auth("ADMIN"), CategoryController.updateCategory);
+router.patch("/:id",  CategoryController.updateCategory);
 
-router.delete("/:id", auth("ADMIN"), CategoryController.deleteCategory);
+router.delete("/:id", CategoryController.deleteCategory);
 
 
 

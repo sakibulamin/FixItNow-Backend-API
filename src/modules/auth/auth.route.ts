@@ -9,7 +9,9 @@ router.post("/register", AuthController.register);
 
 router.post("/login", AuthController.login);
 
-router.get("/me", auth("CUSTOMER", "TECHNICIAN", "ADMIN"), AuthController.getMe);
+router.get("/me", auth("ADMIN", "CUSTOMER", "TECHNICIAN"), AuthController.getMe);
+
+router.post("/refresh-token", AuthController.refreshTokenController)
 
 
 export default router;

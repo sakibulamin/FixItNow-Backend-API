@@ -6,11 +6,15 @@ import auth from "../../middlewares/auth";
 const router = Router();
 
 
-router.get("/", auth("ADMIN"), PaymentController.getAllPayments);
+router.get("/",  PaymentController.getAllPayments);
 
-router.get("/:id", auth("ADMIN", "CUSTOMER"), PaymentController.getSinglePayment);
+router.get("/:id",  PaymentController.getSinglePayment);
 
 router.post("/init/:bookingId",  PaymentController.initPayment);
+
+router.post("/success", PaymentController.paymentSuccess);
+router.post("/fail", PaymentController.paymentFail);
+router.post("/cancel", PaymentController.paymentCancel);
 
 
 

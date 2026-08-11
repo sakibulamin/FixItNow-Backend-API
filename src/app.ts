@@ -7,7 +7,14 @@ import {notFound} from "./middlewares/notFound";
 
 const app:Application = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://fix-it-now-frontend-bay.vercel.app/",
+    ],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,7 +28,6 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api", router);
 
-app.use("/api", router);
 
 
 app.use(notFound);

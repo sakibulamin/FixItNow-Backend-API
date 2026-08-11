@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/", auth("CUSTOMER"), BookingController.createBooking);
 
-router.get("/", auth("ADMIN", "CUSTOMER", "TECHNICIAN"), BookingController.getAllBookings);
+router.get("/",  BookingController.getAllBookings);
 
 router.get("/:id", auth("ADMIN", "CUSTOMER", "TECHNICIAN"), BookingController.getSingleBooking);
 
